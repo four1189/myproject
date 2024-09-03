@@ -1,21 +1,26 @@
 <?php 
+
 session_start();
 require_once 'config/db.php';
 
-if (!isset($_SESSION['admin_login'])) {
+// ตรวจสอบว่าผู้ใช้ได้เข้าสู่ระบบและมีบทบาทเป็น staff หรือไม่
+if (!isset($_SESSION['staff_login'])) {
     $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
     header('location: signin.php');
     exit();
 }
 
-$admin_id = $_SESSION['admin_login'];
+$staff_id = $_SESSION['staff_login'];
+
 try {
+    // ตรวจสอบข้อมูลผู้ใช้ในฐานข้อมูล
     $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id AND urole = :urole");
-    $stmt->bindParam(':id', $admin_id, PDO::PARAM_INT);
-    $stmt->bindValue(':urole', 'admin', PDO::PARAM_STR);
+    $stmt->bindParam(':id', $staff_id, PDO::PARAM_INT);
+    $stmt->bindValue(':urole', 'staff', PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // ตรวจสอบว่าผู้ใช้มีสิทธิ์เข้าถึงหน้านี้หรือไม่
     if (!$row) {
         $_SESSION['error'] = 'ไม่มีข้อมูลในระบบหรือไม่อนุญาตให้เข้าถึงหน้านี้!';
         header('location: signin.php');
@@ -26,13 +31,14 @@ try {
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
+    <title>Staff Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>

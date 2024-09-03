@@ -32,12 +32,35 @@ if (isset($_POST['signin'])) {
                 // ตรวจสอบรหัสผ่าน
                 if (password_verify($password, $row['password'])) {
                     // ตรวจสอบบทบาทของผู้ใช้
-                    if ($row['urole'] == 'admin') {
-                        $_SESSION['admin_login'] = $row['id'];
-                        header("location: admin.php");
-                    } else {
-                        $_SESSION['user_login'] = $row['id'];
-                        header("location: user.php");
+                    switch ($row['urole']) {
+                        case 'admin':
+                            $_SESSION['admin_login'] = $row['id'];
+                            header("location: admin.php");
+                            break;
+                        case 'user':
+                            $_SESSION['user_login'] = $row['id'];
+                            header("location: user.php");
+                            break;
+                        case 'staff':
+                            $_SESSION['staff_login'] = $row['id'];
+                            header("location: staff.php");
+                            break;
+                        case 'store':
+                            $_SESSION['store_login'] = $row['id'];
+                            header("location: store.php");
+                            break;
+                        case 'operation':
+                            $_SESSION['operation_login'] = $row['id'];
+                            header("location: operation.php");
+                            break;
+                        case 'areazone':
+                            $_SESSION['areazone_login'] = $row['id'];
+                            header("location: areazone.php");
+                            break;
+                        default:
+                            $_SESSION['error'] = 'บทบาทไม่รู้จัก';
+                            header("location: signin.php");
+                            break;
                     }
                     exit();
                 } else {
@@ -52,6 +75,7 @@ if (isset($_POST['signin'])) {
             }
         } catch(PDOException $e) {
             echo "ข้อผิดพลาด: " . $e->getMessage();
+            exit();
         }
     }
 }
