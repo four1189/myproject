@@ -74,13 +74,18 @@ if (isset($_POST['signup'])) {
                 $stmt->bindParam(":email", $email);
                 $stmt->bindParam(":password", $passwordHash);
                 $stmt->bindParam(":urole", $urole);
-                $stmt->execute();
 
-                $_SESSION['success'] = "สมัครสมาชิกเรียบร้อยแล้ว! <a href='signin.php' class='alert-link'>คลิ๊กที่นี่</a> เพื่อเข้าสู่ระบบ";
-                header("location: index.php");
-                exit();
+                if ($stmt->execute()) {
+                    $_SESSION['success'] = "สมัครสมาชิกเรียบร้อยแล้ว! <a href='signin.php' class='alert-link'>คลิ๊กที่นี่</a> เพื่อเข้าสู่ระบบ";
+                    header("location: index.php");
+                    exit(); // Make sure to exit after redirection
+                } else {
+                    $_SESSION['error'] = "มีบางอย่างผิดพลาด";
+                    header("location: index.php");
+                    exit(); // Make sure to exit after redirection
+                }
             }
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             echo "ข้อผิดพลาด: " . $e->getMessage();
         }
     }

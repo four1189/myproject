@@ -1,18 +1,20 @@
 <?php 
+
     session_start();
     require_once 'config/db.php';
 
-    if (!isset($_SESSION['admin_login'])) {
+    if (!isset($_SESSION['operation_login'])) {
         $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
         header('location: signin.php');
         exit();
-        }
+    }
 
-        $admin_id = $_SESSION['admin_login'];
-        try {
+    $operation_id = $_SESSION['operation_login'];
+
+    try {
         $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id AND urole = :urole");
-        $stmt->bindParam(':id', $admin_id, PDO::PARAM_INT);
-        $stmt->bindValue(':urole', 'admin', PDO::PARAM_STR);
+        $stmt->bindParam(':id', $operation_id, PDO::PARAM_INT);
+        $stmt->bindValue(':urole', 'operation', PDO::PARAM_STR);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -26,13 +28,14 @@
         exit();
     }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
+    <title>operation Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
