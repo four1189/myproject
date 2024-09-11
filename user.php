@@ -1,22 +1,37 @@
 <?php 
 
-    session_start();
-    require_once 'config/db.php';
-    if (!isset($_SESSION['user_login'])) {
-        $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
-        header('location: signin.php');
-    }
+session_start();
+require_once 'config/db.php';
 
-    if (isset($_SESSION['user_login'])) {
-        $user_id = $_SESSION['user_login'];
-        $stmt = $conn->query("SELECT * FROM users WHERE id = $user_id");
-        $stmt->execute();
+// ตรวจสอบว่าผู้ใช้ได้เข้าสู่ระบบหรือไม่
+if (!isset($_SESSION['user_login'])) {
+    $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
+    header('location: signin.php');
+    exit(); // ป้องกันการทำงานต่อไปหากไม่เข้าสู่ระบบ
+}
+
+// ถ้าผู้ใช้เข้าสู่ระบบแล้ว
+$username = $_SESSION['user_login'];
+
+if (!empty($username)) {
+    // ใช้ prepared statement เพื่อป้องกัน SQL Injection
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username_id = :username_id");
+    $stmt->bindParam(':username_id', $username, PDO::PARAM_STR);
+    $stmt->execute();
+    
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
+        header('location: signin.php');
+        exit();
     }
-        
-
+} else {
+    $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
+    header('location: signin.php');
+    exit();
+}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

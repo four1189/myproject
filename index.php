@@ -19,7 +19,7 @@
     <div class="container">
         <h3 class="mt-4">สมัครสมาชิก</h3>
         <hr>
-        <form action="signup_db.php" method="post">
+        <form id="data-form" method="POST" action="signup_db.php">
             <?php if(isset($_SESSION['error'])) { ?>
                 <div class="alert alert-danger" role="alert">
                     <?php 
@@ -46,8 +46,16 @@
             <?php } ?>
 
             <div class="mb-3">
-                <label for="username" class="form-label">username</label>
-                <input type="text" class="form-control" name="username" aria-describedby="username">
+                <label for="username_id" class="form-label">username</label>
+                <input type="text" class="form-control" name="username_id" aria-describedby="username_id">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" name="password">
+            </div>
+            <div class="mb-3">
+                <label for="confirm password" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="c_password">
             </div>
             <div class="mb-3">
                 <label for="firstname" class="form-label">First name</label>
@@ -62,12 +70,16 @@
                 <input type="email" class="form-control" name="email" aria-describedby="email">
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" name="password">
+                <label for="branch_id" class="form-label">branch</label>
+                <input type="branch_id" class="form-control" name="branch_id">
             </div>
             <div class="mb-3">
-                <label for="confirm password" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" name="c_password">
+                <label for="areazone_id" class="form-label">areazone</label>
+                <input type="areazone_id" class="form-control" name="areazone_id">
+            </div>
+            <div class="mb-3">
+                <label for="department_id" class="form-label">department_id</label>
+                <input type="department_id" class="form-control" name="department_id">
             </div>
             <button type="submit" name="signup" class="btn btn-primary">Sign Up</button>
         </form>

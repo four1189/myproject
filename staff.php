@@ -1,31 +1,38 @@
 <?php 
+
 session_start();
 require_once 'config/db.php';
 
-if (!isset($_SESSION['staff_login'])) {
+// ตรวจสอบว่าผู้ใช้ได้เข้าสู่ระบบหรือไม่
+if (!isset($_SESSION['user_login'])) {
     $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
     header('location: signin.php');
-    exit();
+    exit(); // ป้องกันการทำงานต่อไปหากไม่เข้าสู่ระบบ
 }
 
-$staff_id = $_SESSION['staff_login'];
+// ถ้าผู้ใช้เข้าสู่ระบบแล้ว
+$username = $_SESSION['user_login'];
 
-try {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id AND urole = 'staff'");
-    $stmt->bindParam(':id', $staff_id, PDO::PARAM_INT);
+if (!empty($username)) {
+    // ใช้ prepared statement เพื่อป้องกัน SQL Injection
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username_id = :username_id");
+    $stmt->bindParam(':username_id', $username, PDO::PARAM_STR);
     $stmt->execute();
+    
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
-        $_SESSION['error'] = 'ไม่มีข้อมูลในระบบหรือไม่อนุญาตให้เข้าถึงหน้านี้!';
+        $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
         header('location: signin.php');
         exit();
     }
-} catch (PDOException $e) {
-    echo 'Error: ' . $e->getMessage();
+} else {
+    $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
+    header('location: signin.php');
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

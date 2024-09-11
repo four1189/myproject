@@ -13,31 +13,31 @@ if (isset($_POST['signin'])) {
     }
 
     try {
-        $check_data = $conn->prepare("SELECT * FROM users WHERE username = :username");
-        $check_data->bindParam(":username", $username);
+        $check_data = $conn->prepare("SELECT * FROM users WHERE username_id = :username_id");
+        $check_data->bindParam(":username_id", $username);
         $check_data->execute();
         $row = $check_data->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
             // ตรวจสอบรหัสผ่าน
             if (password_verify($password, $row['password'])) {
-                if ($row['urole'] == 'admin') {
-                    $_SESSION['admin_login'] = $row['id'];
+                if ($row['role_id'] == 'admin') {
+                    $_SESSION['admin_login'] = $row['username_id'];
                     header("location: admin.php");
-                } else if ($row['urole'] == 'user') {
-                    $_SESSION['user_login'] = $row['id'];
+                } else if ($row['role_id'] == 'user') {
+                    $_SESSION['user_login'] = $row['username_id'];
                     header("location: user.php");
-                } else if ($row['urole'] == 'staff') {
-                    $_SESSION['staff_login'] = $row['id'];
+                } else if ($row['role_id'] == 'staff') {
+                    $_SESSION['staff_login'] = $row['username_id'];
                     header("location: staff.php");
-                } else if ($row['urole'] == 'store') {
-                    $_SESSION['store_login'] = $row['id'];
+                } else if ($row['role_id'] == 'store') {
+                    $_SESSION['store_login'] = $row['username_id'];
                     header("location: store.php");
-                } else if ($row['urole'] == 'operation') {
-                    $_SESSION['operation_login'] = $row['id'];
+                } else if ($row['role_id'] == 'operation') {
+                    $_SESSION['operation_login'] = $row['username_id'];
                     header("location: operation.php");
-                } else if ($row['urole'] == 'areazone') {
-                    $_SESSION['areazone_login'] = $row['id'];
+                } else if ($row['role_id'] == 'areazone') {
+                    $_SESSION['areazone_login'] = $row['username_id'];
                     header("location: areazone.php");
                 } 
                 exit();
