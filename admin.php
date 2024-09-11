@@ -3,15 +3,21 @@
 session_start();
 require_once 'config/db.php';
 
+// ตรวจสอบการเชื่อมต่อฐานข้อมูล
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
 // ตรวจสอบว่าผู้ใช้ได้เข้าสู่ระบบหรือไม่
-if (!isset($_SESSION['user_login'])) {
+if (!isset($_SESSION['admin_login'])) {
     $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
     header('location: signin.php');
     exit(); // ป้องกันการทำงานต่อไปหากไม่เข้าสู่ระบบ
 }
 
 // ถ้าผู้ใช้เข้าสู่ระบบแล้ว
-$username = $_SESSION['user_login'];
+$username = $_SESSION['admin_login'];
+
 
 if (!empty($username)) {
     // ใช้ prepared statement เพื่อป้องกัน SQL Injection
@@ -27,17 +33,12 @@ if (!empty($username)) {
         exit();
     }
 
-    // ตรวจสอบบทบาทของผู้ใช้
-    if ($row['role'] !== 'admin') {
-        $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้!';
-        header('location: signin.php');
-        exit();
-    }
 } else {
     $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
     header('location: signin.php');
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -163,24 +164,97 @@ if (!empty($username)) {
             font-size: 18px;
             font-weight: bold;
         }
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; /* Center it horizontally */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 600px; /* Optional: Adjust width as needed */
+            position: fixed; /* Fix position */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Center the modal */
+        }
+
+        /* Close Button */
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .profile-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        text-align: center;
+        }
+        .profile-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .profile-position {
+            font-size: 1.2rem;
+            color: #555;
+        }
     </style>
 <body>
 <div class="sidebar">
-        <div class="profile-pic"></div>
-        <div class="user-info">
-            <h3>ชื่อ - นามสกุล</h3>
-            <p>ตำแหน่ง</p>
-        </div>
+    <div class="container">
+        <h3 class="mt-4">
+            <?php 
+            if (isset($row['firstname']) && isset($row['lastname'])) {
+                echo htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']);
+            } else {
+                echo "ชื่อและนามสกุลไม่ระบุ";
+            }
+            ?>
+        </h3>
+        <p>
+            <?php 
+            if (isset($row['position'])) {
+                echo htmlspecialchars($row['position']);
+            } else {
+                echo "ตำแหน่งไม่ระบุ";
+            }
+            ?>
+        </p>
+    </div>
         <a href="index.html" class="menu-item">หน้าแรก</a>
         <a href="Add information.html" class="menu-item">เพิ่มข้อมูล</a>
         <a href="setting.html" class="menu-item">การตั้งค่าสิทธิ์</a>
         <a href="setting2.html" class="menu-item">ตั้งค่า2</a>
         <a href="averaging.html" class="menu-item">การเฉลี่ยยอด</a>
+        <a href="logout.php" class="btn btn-danger">Logout</a>
     </div>
     <div class="main-content">
         <div class="container">
             <h1>ตั้งค่าเป้ายอดขาย</h1>
-
             <!-- Step 1: Method Selection -->
             <div id="method-selection" class="step">
                 <h2>เลือกวิธีการตั้งค่าเป้าหมาย</h2>
@@ -194,10 +268,7 @@ if (!empty($username)) {
                     </div>
                 </form>
             </div>
-    <div class="container">
-        <h3 class="mt-4">Welcome, <?php echo htmlspecialchars($row['firstname']) . ' ' . htmlspecialchars($row['lastname']); ?></h3>
-        <a href="logout.php" class="btn btn-danger">Logout</a>
-    </div>
+    
     <div id="data-entry" class="step hidden">
                 <h2>กรอกข้อมูล</h2>
                 <form method="POST" action="">

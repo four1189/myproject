@@ -4,14 +4,14 @@ session_start();
 require_once 'config/db.php';
 
 // ตรวจสอบว่าผู้ใช้ได้เข้าสู่ระบบหรือไม่
-if (!isset($_SESSION['user_login'])) {
+if (!isset($_SESSION['operation_login'])) {
     $_SESSION['error'] = 'กรุณาเข้าสู่ระบบ!';
     header('location: signin.php');
     exit(); // ป้องกันการทำงานต่อไปหากไม่เข้าสู่ระบบ
 }
 
 // ถ้าผู้ใช้เข้าสู่ระบบแล้ว
-$username = $_SESSION['user_login'];
+$username = $_SESSION['operation_login'];
 
 if (!empty($username)) {
     // ใช้ prepared statement เพื่อป้องกัน SQL Injection

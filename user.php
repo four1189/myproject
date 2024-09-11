@@ -26,6 +26,7 @@ if (!empty($username)) {
         header('location: signin.php');
         exit();
     }
+    
 } else {
     $_SESSION['error'] = 'ข้อมูลผู้ใช้ไม่ถูกต้อง!';
     header('location: signin.php');
